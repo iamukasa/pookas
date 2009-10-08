@@ -153,7 +153,7 @@ class PHPMailer {
    * by SERVER_NAME is used or 'localhost.localdomain'.
    * @var string
    */
-  var $Hostname          = '';
+  var $Hostname          = 'http://www.lab4games.net';
 
   /**
    * Sets the message ID to be used in the Message-Id header.
