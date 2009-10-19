@@ -1,0 +1,20 @@
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\bin\Debug\vbtest1.exe
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\bin\Debug\vbtest1.pdb
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\bin\Debug\vbtest1.xml
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\obj\Debug\vbtest1.Form1.resources
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\obj\Debug\vbtest1.Resources.resources
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\obj\Debug\vbtest1.vbproj.GenerateResource.Cache
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\obj\Debug\vbtest1.exe
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\obj\Debug\vbtest1.xml
+C:\Users\garloo\AppData\Local\Temporary Projects\vbtest1\obj\Debug\vbtest1.pdb
+C:\Users\garloo\Desktop\vbtest1\vbtest1\obj\Debug\vbtest1.exe
+C:\Users\garloo\Desktop\vbtest1\vbtest1\obj\Debug\vbtest1.xml
+C:\Users\garloo\Desktop\vbtest1\vbtest1\obj\Debug\vbtest1.pdb
+C:\Users\garloo\Desktop\vbtest1\vbtest1\bin\Debug\vbtest1.exe
+C:\Users\garloo\Desktop\vbtest1\vbtest1\bin\Debug\vbtest1.pdb
+C:\Users\garloo\Desktop\vbtest1\vbtest1\bin\Debug\vbtest1.xml
+C:\Users\garloo\Desktop\vbtest1\vbtest1\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\garloo\Desktop\vbtest1\vbtest1\obj\Debug\vbtest1.Form1.resources
+C:\Users\garloo\Desktop\vbtest1\vbtest1\obj\Debug\vbtest1.Resources.resources
+C:\Users\garloo\Desktop\vbtest1\vbtest1\obj\Debug\vbtest1.vbproj.GenerateResource.Cache
