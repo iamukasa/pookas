@@ -1,0 +1,17 @@
+<aiml>
+
+<category><pattern>cmm</pattern><template><srai>what cmm</srai></template></category>
+<category><pattern>what * cmm</pattern><template><srai>what cmm</srai></template></category>
+<category><pattern>tell * cmm</pattern><template><srai>what cmm</srai></template></category>
+<category><pattern>where * cmm</pattern><template><srai>where cmm</srai></template></category>
+<category><pattern>why * cmm</pattern><template><srai>why cmm</srai></template></category>
+<category><pattern>what * cmm *</pattern><template><srai>what cmm</srai></template></category>
+<category><pattern>tell * cmm *</pattern><template><srai>what cmm</srai></template></category>
+<category><pattern>where * cmm *</pattern><template><srai>where cmm</srai></template></category>
+<category><pattern>why * cmm *</pattern><template><srai>why cmm</srai></template></category>
+<category><pattern>what is cmm</pattern><template><srai>what cmm</srai></template></category>
+<category><pattern>what cmm</pattern><template>CMM stands for Capability Maturity Model.</template></category>
+<category><pattern>where cmm</pattern><template>You can find more information by google Software Engineering Institute (SEI)</template></category>
+<category><pattern>why cmm</pattern><template>Well, CMM is a good measure of the company's current capability. It is widely used in the industry as a standard.</template></category>
+
+</aiml>
