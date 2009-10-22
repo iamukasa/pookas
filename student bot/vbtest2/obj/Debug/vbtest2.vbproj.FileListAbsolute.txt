@@ -1,0 +1,15 @@
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\Interop.AWSDKLib42.dll
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\AxInterop.AWSDKLib42.dll
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\vbtest2.vbproj.ResolveComReference.cache
+C:\Users\garloo\Desktop\vbtest2\vbtest2\bin\Debug\vbtest2.exe
+C:\Users\garloo\Desktop\vbtest2\vbtest2\bin\Debug\vbtest2.pdb
+C:\Users\garloo\Desktop\vbtest2\vbtest2\bin\Debug\vbtest2.xml
+C:\Users\garloo\Desktop\vbtest2\vbtest2\bin\Debug\Interop.AWSDKLib42.dll
+C:\Users\garloo\Desktop\vbtest2\vbtest2\bin\Debug\AxInterop.AWSDKLib42.dll
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\WindowsApplication2.Resources.resources
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\vbtest2.vbproj.GenerateResource.Cache
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\vbtest2.exe
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\vbtest2.xml
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\vbtest2.pdb
+C:\Users\garloo\Desktop\vbtest2\vbtest2\obj\Debug\WindowsApplication2.StudentBot.resources
