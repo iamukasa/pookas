@@ -1,0 +1,9 @@
+Q What is not a type of integration testing?
+A Big-Bang
+A Top-Down
+A Egg Sandwich
+
+Q What is software quality management?
+A Ensuring that the required level of quality is achieved in a product
+A Hoping it works
+A Shipping the product
