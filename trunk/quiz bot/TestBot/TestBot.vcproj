@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="aw.lib"
+				AdditionalDependencies="aw.lib libcunit.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -172,19 +172,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\main.cpp"
+				RelativePath=".\code\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ParticipantManager.cpp"
+				RelativePath=".\code\ParticipantManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\QuizParticipant.cpp"
+				RelativePath=".\code\QuizPage.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Vect2D.cpp"
+				RelativePath=".\code\QuizParticipant.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\code\QuizQuestion.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\code\Vect2D.cpp"
 				>
 			</File>
 		</Filter>
@@ -194,15 +202,27 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\ParticipantManager.h"
+				RelativePath=".\code\ParticipantManager.h"
 				>
 			</File>
 			<File
-				RelativePath=".\QuizParticipant.h"
+				RelativePath=".\code\QuizPage.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Vect2D.h"
+				RelativePath=".\code\QuizParticipant.h"
+				>
+			</File>
+			<File
+				RelativePath=".\code\QuizQuestion.h"
+				>
+			</File>
+			<File
+				RelativePath=".\code\Timer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\code\Vect2D.h"
 				>
 			</File>
 		</Filter>
