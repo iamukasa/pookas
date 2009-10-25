@@ -1,9 +1,11 @@
 #ifndef _QUIZ_PARTICIPANT_
 #define _QUIZ_PARTICIPANT_
 
-#include "Vect2D.h" 
+#include <iostream>
+#include "Vect3D.h" 
+#include "aw.h"
 
-enum PlayerState{ QUIZPLAYER_CLICKED, QUIZPLAYER_REGISTERED, QUIZPLAYER_START, QUIZPLAYER_INVALID };
+enum PlayerState{ QUIZPLAYER_CLICKED, QUIZPLAYER_REGISTERED, QUIZPLAYER_STARTER, QUIZPLAYER_INVALID };
 
 class QuizParticipant
 {
@@ -17,14 +19,19 @@ public:
 	
 	void setSessionID( int session );
 	int getSessionID();
+	
+	void setName(std::string n);
+	std::string getName();
 
-	void setPos( int x, int y );
-	Vect2D getPos();
+	bool checkCollision( Vect3D objPos, int radius );
+	void addScore();
+	int getScore();
 
 private:
 	int sessionID;
-	PlayerState state; 
-	Vect2D pos;
+	PlayerState state;
+	int score; 
+	std::string name; 
 };
 
 #endif

@@ -4,14 +4,13 @@
 #include <iostream>
 #include <string> 
 #include <Vector>
-#include "Vect2D.h"
+#include "Vect3D.h"
 #include "ParticipantManager.h"
 #include "QuizParticipant.h" 
 #include "QuizPage.h" 
-#include "Timer.h" 
 
 void init(); 
-void createBot( std::string botName, int x, int y, int z );
+void createBot( std::string botName, float x, float y, float z );
 void createHUD( int session ); 
 
 //event handlers
@@ -20,29 +19,39 @@ void onAvatarSpeak();
 void onAvatarChange(); 
 void onAvatarClick(); 
 void onAvatarHUDClick(); 
+void onBump(); 
 
-bool AddPlayer( int speakerSession, std::string message );
-void QuizRound();
+bool addPlayer( int speakerSession, std::string name, std::string message );
+void quizRound();
+void destroy();
+
 enum BotState { QUIZBOT_IDLE, QUIZBOT_REGISTRATION, QUIZBOT_INPROGRESS };
 
 ParticipantManager users; 
 BotState quizState; 
 QuizPage quizPage; 
-
+std::vector <Vect3D*> panelPos;
 
 int main (int argc, char *argv[])
 {
-	std::cout << "Greeter Bot" << std::endl;
+	std::cout << "Quiz Bot" << std::endl;
 	
 	init();
-	createBot("SomeBot", 0, 0, 0);
+	createBot("Quiz Bot", 4750, 815, -518);	
 	quizState = QUIZBOT_IDLE; 
 	
+	//set the positions for the answer panels
+	panelPos.push_back( new Vect3D(4200, 760, 82) ); //1
+	panelPos.push_back( new Vect3D(4150, 760, -1118) ); //2
+	panelPos.push_back( new Vect3D(5350, 760, 82) ); //3
+	panelPos.push_back( new Vect3D(5350, 760, -1118) ); //4
+
 	//initialize quiz questions
 	quizPage.loadData("data/questions.txt");
 
 	while (!aw_wait (1000)) //main event loop triggers every second
-	{	
+	{
+		
 		switch ( quizState )
 		{
 			case QUIZBOT_IDLE:
@@ -52,13 +61,14 @@ int main (int argc, char *argv[])
 
 			case QUIZBOT_INPROGRESS:
 			{
-				QuizRound();
+				quizRound();
 				break;
 			}
 
 		}
 	}
 	
+	destroy();
 	aw_destroy ();
 	aw_term ();
 	return 0;
@@ -80,6 +90,15 @@ void init()
 	aw_event_set(AW_EVENT_AVATAR_CHANGE, onAvatarChange); 
 	aw_event_set(AW_EVENT_AVATAR_CLICK, onAvatarClick); 
 	aw_event_set(AW_EVENT_HUD_CLICK, onAvatarHUDClick); 
+	aw_event_set(AW_EVENT_OBJECT_BUMP, onBump); 
+}
+
+void destroy()
+{
+	for ( unsigned int i = 0; i < panelPos.size(); i++ )
+	{
+		delete panelPos.at(i);
+	}
 }
 
 void onAvatarAdd () //event handler when an user enters into the world
@@ -88,32 +107,31 @@ void onAvatarAdd () //event handler when an user enters into the world
 
 void onAvatarSpeak()
 {
-	//printf ("%s %s %s\n", aw_string (AW_AVATAR_NAME),
-	//chat_type[aw_int (AW_CHAT_TYPE)], aw_string (AW_CHAT_MESSAGE));
 	int speakerSession = aw_int( AW_CHAT_SESSION ); 
 
 	if ( aw_int(AW_CHAT_TYPE) == AW_CHAT_WHISPER )
 	{		
 		std::string message = aw_string(AW_CHAT_MESSAGE);
-		//std::cout << aw_string(AW_AVATAR_NAME) << " " << speakerSession << " whispered to me!" << std::endl;
-		//if user is registered
-		
 
 		switch ( quizState )
 		{
 			case QUIZBOT_IDLE:
 			{				
-				if ( AddPlayer( speakerSession, message ) )
+				if ( addPlayer( speakerSession, aw_string(AW_AVATAR_NAME), message ) )
 				{
 					//delete everyone else in the list
 					users.removeAllUsers();
 
 					users.setUser( speakerSession, QUIZPLAYER_REGISTERED ); 
-					
+					users.setPlayerName( speakerSession, aw_string(AW_AVATAR_NAME) );
+
 					quizState = QUIZBOT_REGISTRATION;
 					users.setStartingPlayer( speakerSession );
-					aw_whisper( speakerSession, "You are the starting player. Click on me when you would like to begin the quiz for everyone.");
-					aw_say( "Join the quiz game starting now at Level 2!");
+					ParticipantManager::whisper(speakerSession,	
+						"You are the starting player. Click on me when you would like to begin the quiz for everyone." ,
+						0, 100, 0, 0, 0);
+					
+					aw_say( "[Announcement] Join the quiz game starting now at Level 2!");
 				}			
 				
 				break;
@@ -124,10 +142,14 @@ void onAvatarSpeak()
 				// check if the player is the starting player
 				if ( speakerSession == users.getStartingPlayer() )
 				{
-					if (( message == "Y" || message == "y" ) && users.getState(users.getStartingPlayer()) == QUIZPLAYER_START )
+					if (( message == "Y" || message == "y" ) && 
+						users.getState(users.getStartingPlayer()) == QUIZPLAYER_STARTER )
 					{ 
+						//remove all players with state QUIZPLAYER_CLICKED
+						users.removeAllWithState( QUIZPLAYER_CLICKED );
+
 						//start game
-						users.broadcast( "Game started!" );
+						users.broadcast( "Game started!", 100, 0, 100, 1, 0 );
 						quizState = QUIZBOT_INPROGRESS;
 					}
 					else
@@ -136,12 +158,13 @@ void onAvatarSpeak()
 						std::string str = "Please wait a moment while ";
 						str += aw_string (AW_AVATAR_NAME);
 						str += " gets the game started!";
-						users.broadcast( str );
+						users.broadcast( str, 0, 1, 0, 0, 1 );
 					}
 				}
-				else
+				else //not the starting player
 				{
-					AddPlayer( speakerSession, message );
+					//add the player
+					addPlayer( speakerSession, aw_string(AW_AVATAR_NAME), message );
 				}
 				
 				break;
@@ -158,7 +181,7 @@ void onAvatarSpeak()
 	}
 }
 
-bool AddPlayer( int speakerSession, std::string message )
+bool addPlayer( int speakerSession, std::string name, std::string message )
 {
 	int userExists = users.userExists( speakerSession );
 
@@ -168,15 +191,17 @@ bool AddPlayer( int speakerSession, std::string message )
 	std::cout << "AddPlayer: playerstate = " << users.getState( speakerSession ) << std::endl;
 	if ( users.getState( speakerSession ) != QUIZPLAYER_CLICKED ) //the player is already registered
 	{
-		aw_whisper( speakerSession , "Please wait for the game to start.");
+		ParticipantManager::whisper(speakerSession , "Please wait for the game to start.", 0, 100, 0, 0, 0);
+
 		return false;
 	}
 
 	if ( message == "Y" || message == "y" )
 	{
 		std::cout << aw_string(AW_AVATAR_NAME) << " signed up \n";
-		aw_whisper( speakerSession , "You have signed up for the quiz!");
+		ParticipantManager::whisper(speakerSession , "You have signed up for the quiz!", 0, 100, 0, 0, 0);
 		users.setUser( speakerSession, QUIZPLAYER_REGISTERED );
+		users.setPlayerName( speakerSession, name );
 		users.print();
 		return true;
 	}
@@ -184,7 +209,7 @@ bool AddPlayer( int speakerSession, std::string message )
 	else if ( message == "N" || message == "n" )
 	{
 		users.removeUser( speakerSession );
-		aw_whisper( speakerSession , "Alrighty then.");
+		ParticipantManager::whisper(speakerSession , "Alrighty then.", 0, 100, 0, 0, 0);
 		return false;
 	}
 	
@@ -198,7 +223,6 @@ void onAvatarClick()
 	//bot got clicked on
 	if ( aw_int(AW_CLICKED_SESSION) == aw_session() )
 	{
-		std::cout << aw_string(AW_AVATAR_NAME) << " " << clicker << " clicked on me! \n";
 		//check if user exists in the participants list
 		int userExists = users.userExists( clicker ); 
 
@@ -206,9 +230,9 @@ void onAvatarClick()
 		{
 			case QUIZBOT_IDLE:
 			{			
-				aw_whisper( clicker, "Hello. Would you like to begin the quiz? (y/n)");
+				ParticipantManager::whisper(clicker , "Hello. Up for some quizzing today? (y/n)", 0, 100, 0, 1, 0);
 				users.setUser( clicker, QUIZPLAYER_CLICKED );			
-
+				
 				break;
 			}
 
@@ -216,7 +240,7 @@ void onAvatarClick()
 			{
 				if ( userExists == -1 ) //new player joins
 				{
-					aw_whisper( clicker, "Hello. Would you like to join the quiz? (y/n)");
+					ParticipantManager::whisper(clicker , "Hello. Would you like to join the quiz? (y/n)", 0, 100, 0, 1, 0);
 					users.setUser( clicker, QUIZPLAYER_CLICKED );
 				}
 				
@@ -224,12 +248,14 @@ void onAvatarClick()
 				{
 					if ( users.getStartingPlayer() == clicker ) 
 					{
-						aw_whisper( clicker, "You are the starting player. Would you like to start the quiz now for everyone? (y/n)");
-						users.setState( clicker, QUIZPLAYER_START );
+						ParticipantManager::whisper(clicker , 
+							"You are the starting player. Would you like to start the quiz now for everyone? (y/n)", 
+							0, 100, 0, 0, 0);
+						users.setState( clicker, QUIZPLAYER_STARTER );
 					}	
 					else
 					{
-						aw_whisper( clicker, "Please wait for the game to start.");
+						ParticipantManager::whisper(clicker, "Please wait for the game to start.", 0, 100, 0, 0, 0);
 					}
 
 				}
@@ -246,17 +272,7 @@ void onAvatarClick()
 
 void onAvatarChange()
 {	
-	Vect2D myPos; 
-	myPos.SetXY( (float)aw_int(AW_MY_X), (float)aw_int(AW_MY_Y) );
 	
-	//check the distance of the avatars from the bot 
-	if ( aw_int(AW_AVATAR_SESSION) != aw_session() )
-	{
-		
-	//	std::cout << aw_int(AW_MY_X) << "\n";
-	//	std::cout << aw_int(AW_AVATAR_SESSION) << " is now at " <<  
-	//		aw_int(AW_AVATAR_X) << " " << aw_int (AW_AVATAR_Y) << " " <<  aw_int (AW_AVATAR_Z) << "\n" ;
-	}
 }
 
 void onAvatarHUDClick()
@@ -286,7 +302,12 @@ void createHUD( int session )
 
 }
 
-void createBot( std::string botName, int x, int y, int z )
+void onBump()
+{
+	std::cout << "Someone bumped into: " << aw_string(AW_OBJECT_MODEL) << std::endl;
+}
+
+void createBot( std::string botName, float x, float y, float z )
 {
 	int rc; 
 
@@ -315,10 +336,12 @@ void createBot( std::string botName, int x, int y, int z )
 	}
 
 	/* announce our position in the world */
-	aw_int_set (AW_MY_X, x); //w
-	aw_int_set (AW_MY_Y, y);
-	aw_int_set (AW_MY_Z, z); //n
-	aw_int_set (AW_MY_YAW, 2250); //facing
+	aw_int_set (AW_MY_X, (int)x); //w
+	aw_int_set (AW_MY_Y, (int)y);
+	aw_int_set (AW_MY_Z, (int)z); //n
+	aw_int_set (AW_MY_YAW, 900); //facing
+	aw_int_set (AW_MY_TYPE, 62 );	
+	aw_int_set (AW_MY_GESTURE, 1);
 
 	if (rc = aw_state_change ()) 
 	{ 
@@ -328,13 +351,13 @@ void createBot( std::string botName, int x, int y, int z )
 	}
 }
 
-void QuizRound()
+void quizRound()
 {
 	//retrieve a question 
 	QuizQuestion *q = quizPage.getNextQuestion();
 	if ( q != NULL )
 	{
-		users.broadcast( q->getQuestion() );
+		users.broadcast( q->getQuestion(), 255, 0, 0, 1, 0 );
 		
 		//get the answers for the question
 		std::vector <std::string>* a = q->getAnswers();
@@ -346,19 +369,34 @@ void QuizRound()
 			msg += optionNum;
 			msg += " ";
 			msg += a->at(i);
-			users.broadcast( msg );
+	
+			users.broadcast( msg, 0, 0, 0, 1, 0 );
 		}
 
 		//wait for 10 seconds for the players to answer
 		aw_wait(10000);
+		
+		users.broadcast("Time's up!", 100, 0, 100, 0, 0 );				
+		
+		//check answers
+		users.checkAnswers( *panelPos.at( q->getCorrectAnswer() ) , 200);
 
-		users.broadcast("Time's up!");				
+		//broadcast the correct answer
+		std::string correct = "The correct answer was ";
+		correct += q->getAnswers()->at( q->getCorrectAnswer() );
+		users.broadcast( correct, 0, 100, 0, 1, 0 );
+
+
 	}
 	else //no more questions
-	{
+	{	
+		//broadcast the top scores
+		users.broadcastTopScores();
+		users.broadcast( "The quiz is over! Thank you for playing.", 100, 0, 100, 1, 0 );
+	
 		quizPage.reset();
-		users.broadcast( "The quiz is over! Thank you for playing." );
+		users.removeAllUsers();
+		
 		quizState = QUIZBOT_IDLE;
 	}					
 }
-

@@ -2,6 +2,7 @@
 
 QuizQuestion::QuizQuestion(void)
 {
+	correctAnswer = 0;
 }
 
 QuizQuestion::~QuizQuestion(void)
@@ -27,4 +28,14 @@ std::string QuizQuestion::getQuestion()
 std::vector <std::string>* QuizQuestion::getAnswers()
 {
 	return &answers;
+}
+
+void QuizQuestion::setCorrectAnswer( int a )
+{
+	correctAnswer = a;
+}
+
+int QuizQuestion::getCorrectAnswer()
+{
+	return correctAnswer;
 }

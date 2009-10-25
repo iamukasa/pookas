@@ -12,12 +12,15 @@ public:
 	ParticipantManager(void);
 	~ParticipantManager(void);
 	
-	void Destroy(); 
+	void destroy(); 
 
 	void setUser( int session, PlayerState state );
 	void setAllUsers ( PlayerState state ); 
+
 	void removeUser( int session ); 
 	void removeAllUsers(); 
+	void removeAllWithState( int state ); 
+
 	int userExists( int session ); 
 	PlayerState getState( int session ); 
 	void setState( int session, PlayerState state );
@@ -25,13 +28,19 @@ public:
 	
 	void setStartingPlayer( int session );
 	int getStartingPlayer();
+
+	void setPlayerName( int session, std::string name );
+	std::string getPlayerName( int session );
 	
-	void setPlayerPos( int session, int x, int y );
-	Vect2D* getPlayerPos( int session );
-	void broadcast( std::string message );
+	void broadcast( std::string message, int r, int g, int b, int bold, int italic );
+	static void whisper( int session, std::string message, int r, int g, int b, int bold, int italic );
+	void checkAnswers( Vect3D objPos, int radius );
+	void broadcastTopScores();
+
 private:
 	std::vector <QuizParticipant*> quizUsers;
 	int startingPlayerSID;
+	int topScore;
 };
 
 #endif
