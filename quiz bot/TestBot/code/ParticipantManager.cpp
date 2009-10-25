@@ -2,6 +2,7 @@
 
 ParticipantManager::ParticipantManager(void)
 {
+	int topScore = 0;
 	startingPlayerSID = -1;
 }
 
@@ -9,13 +10,15 @@ ParticipantManager::~ParticipantManager(void)
 {
 }
 
-void ParticipantManager::Destroy()
+void ParticipantManager::destroy()
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
 	{
 		//delete
 		delete quizUsers.at(i); 
 	}
+
+	quizUsers.clear();
 }
 
 void ParticipantManager::setUser( int session, PlayerState state )
@@ -64,7 +67,17 @@ void ParticipantManager::removeAllUsers()
 {
 	quizUsers.clear();
 	std::cout << "After clear\n";
-	print();
+}
+
+void ParticipantManager::removeAllWithState( int state )
+{
+	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
+	{
+		if ( quizUsers.at(i)->getState() == state )
+		{
+			quizUsers.erase(quizUsers.begin()+i, quizUsers.begin()+i+1 );
+		}
+	}
 }
 
 //returns the index into the participants vector if exists, -1 otherwise
@@ -122,30 +135,119 @@ int ParticipantManager::getStartingPlayer()
 }
 
 
-void ParticipantManager::setPlayerPos( int session, int x, int y )
+void ParticipantManager::broadcast( std::string message, int r, int g, int b, int bold, int italic )
 {
+	int rc;
+	std::string msg = "[QuizBot]:\t";
+	msg += message;
+
+	aw_int_set (AW_CONSOLE_RED, r);
+	aw_int_set (AW_CONSOLE_GREEN, g);
+	aw_int_set (AW_CONSOLE_BLUE, b);
+	aw_bool_set (AW_CONSOLE_BOLD, bold);
+	aw_bool_set (AW_CONSOLE_ITALICS, italic);
+
+	aw_string_set (AW_CONSOLE_MESSAGE, msg.c_str());
+
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
 	{
-		if ( quizUsers.at(i)->getSessionID() == session )
-			quizUsers.at(i)->setPos( x, y ); 
+		if ( rc = aw_console_message ( quizUsers.at(i)->getSessionID()) )
+		{
+			std::cout << "Console message failed (reason "<< rc << ")\n";
+
+		}
 	}
 }
 
-Vect2D* ParticipantManager::getPlayerPos( int session )
+void ParticipantManager::whisper( int session, std::string message, int r, int g, int b, int bold, int italic )
 {
-	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
-	{
-		if ( quizUsers.at(i)->getSessionID() == session )
-			return &quizUsers.at(i)->getPos(); 
-	}
+	int rc;
+	std::string msg = "[QuizBot]:\t";
+	msg += message;
+
+	aw_int_set (AW_CONSOLE_RED, r);
+	aw_int_set (AW_CONSOLE_GREEN, g);
+	aw_int_set (AW_CONSOLE_BLUE, b);
+	aw_bool_set (AW_CONSOLE_BOLD, bold);
+	aw_bool_set (AW_CONSOLE_ITALICS, italic);
+
+	aw_string_set (AW_CONSOLE_MESSAGE, msg.c_str());
+
 	
-	return NULL;	
+	if ( rc = aw_console_message ( session ) )
+	{
+		std::cout << "Console message failed (reason "<< rc << ")\n";
+
+	}
 }
 
-void ParticipantManager::broadcast( std::string message )
+void ParticipantManager::checkAnswers( Vect3D objPos, int radius )
+{
+	std::string scoremsg;
+	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
+	{
+		if ( quizUsers.at(i)->checkCollision( objPos, radius ) )
+		{
+			quizUsers.at(i)->addScore(); 
+
+			if ( quizUsers.at(i)->getScore() > topScore )
+			{
+				topScore = quizUsers.at(i)->getScore();
+			}
+
+			scoremsg = "You got it right! ";
+			
+		}
+		else
+		{
+			scoremsg = "Wrong answer, boo. ";
+		}
+	
+		scoremsg += "Your score is: ";
+		char scorestr [2];
+		_itoa_s(quizUsers.at(i)->getScore(), scorestr, 10);
+		scoremsg += scorestr;
+	
+		whisper( quizUsers.at(i)->getSessionID(), scoremsg.c_str(), 100, 0, 100, 0, 0 );
+	}
+}
+
+void ParticipantManager::broadcastTopScores()
+{
+	std::string top = "The top score is ";
+	char scorestr [2];
+	_itoa_s(topScore, scorestr, 10);
+	top += scorestr;
+	top += " achieved by ";
+
+	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
+	{
+		if ( quizUsers.at(i)->getScore() == topScore )
+			top += quizUsers.at(i)->getName(); 
+	}
+
+	top += "!";
+
+	broadcast(top.c_str(), 100, 0, 0, 1, 0 );				
+
+}
+
+void ParticipantManager::setPlayerName( int session, std::string name )
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
 	{
-		aw_whisper( quizUsers.at(i)->getSessionID(), message.c_str() );
+		if ( quizUsers.at(i)->getSessionID() == session )
+			quizUsers.at(i)->setName(name);
 	}
+}
+
+std::string ParticipantManager::getPlayerName( int session )
+{
+	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
+	{
+		if ( quizUsers.at(i)->getSessionID() == session )
+			return quizUsers.at(i)->getName();
+	}
+
+	return NULL;
 }
