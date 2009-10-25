@@ -192,7 +192,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\code\Vect2D.cpp"
+				RelativePath=".\code\Vect3D.cpp"
 				>
 			</File>
 		</Filter>
@@ -222,7 +222,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\code\Vect2D.h"
+				RelativePath=".\code\Vect3D.h"
 				>
 			</File>
 		</Filter>
