@@ -69,14 +69,23 @@ void ParticipantManager::removeAllUsers()
 	std::cout << "After clear\n";
 }
 
-void ParticipantManager::removeAllWithState( int state )
+void ParticipantManager::removeAllWithState( PlayerState state )
 {
+	std::vector <int> toRemove;
+	int numRemoved = 0;
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
 	{
 		if ( quizUsers.at(i)->getState() == state )
-		{
-			quizUsers.erase(quizUsers.begin()+i, quizUsers.begin()+i+1 );
+		{			
+			toRemove.push_back(i-numRemoved);
+			numRemoved += 1;
 		}
+	}
+
+	for ( unsigned int j = 0; j < toRemove.size(); j++ )
+	{
+		int removing = toRemove.at(j);
+		quizUsers.erase(quizUsers.begin()+removing, quizUsers.begin()+removing+1 );
 	}
 }
 
@@ -218,26 +227,34 @@ void ParticipantManager::broadcastTopScores()
 	char scorestr [2];
 	_itoa_s(topScore, scorestr, 10);
 	top += scorestr;
-	top += " achieved by ";
+	top += " achieved by";
 
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
 	{
 		if ( quizUsers.at(i)->getScore() == topScore )
+		{
+			top += " ";
 			top += quizUsers.at(i)->getName(); 
+		}
+		
 	}
 
 	top += "!";
 
 	broadcast(top.c_str(), 100, 0, 0, 1, 0 );				
-
+	std::cout << top << std::endl;
 }
 
 void ParticipantManager::setPlayerName( int session, std::string name )
 {
+	std::cout << "setting player name: " << name << " for session " << session << std::endl;
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
 	{
 		if ( quizUsers.at(i)->getSessionID() == session )
+		{
+			
 			quizUsers.at(i)->setName(name);
+		}
 	}
 }
 
@@ -250,4 +267,11 @@ std::string ParticipantManager::getPlayerName( int session )
 	}
 
 	return NULL;
+}
+
+void ParticipantManager::reset()
+{
+	removeAllUsers();
+	topScore = 0; 
+	startingPlayerSID = -1;
 }

@@ -8,7 +8,7 @@
 #include "ParticipantManager.h"
 #include "QuizParticipant.h" 
 #include "QuizPage.h" 
-
+#include <windows.h>
 void init(); 
 void createBot( std::string botName, float x, float y, float z );
 void createHUD( int session ); 
@@ -31,11 +31,14 @@ ParticipantManager users;
 BotState quizState; 
 QuizPage quizPage; 
 std::vector <Vect3D*> panelPos;
-
+bool contin = true; 
 int main (int argc, char *argv[])
 {
 	std::cout << "Quiz Bot" << std::endl;
-	
+
+	//initialize quiz questions
+	quizPage.loadHTMLData("data/quiz.html");
+
 	init();
 	createBot("Quiz Bot", 4750, 815, -518);	
 	quizState = QUIZBOT_IDLE; 
@@ -43,15 +46,12 @@ int main (int argc, char *argv[])
 	//set the positions for the answer panels
 	panelPos.push_back( new Vect3D(4200, 760, 82) ); //1
 	panelPos.push_back( new Vect3D(4150, 760, -1118) ); //2
-	panelPos.push_back( new Vect3D(5350, 760, 82) ); //3
-	panelPos.push_back( new Vect3D(5350, 760, -1118) ); //4
+	panelPos.push_back( new Vect3D(5350, 760, -418) ); //3
 
-	//initialize quiz questions
-	quizPage.loadData("data/questions.txt");
 
-	while (!aw_wait (1000)) //main event loop triggers every second
+	
+	while (contin) //main event loop triggers every second
 	{
-		
 		switch ( quizState )
 		{
 			case QUIZBOT_IDLE:
@@ -66,6 +66,7 @@ int main (int argc, char *argv[])
 			}
 
 		}
+		aw_wait (1000);
 	}
 	
 	destroy();
@@ -99,6 +100,8 @@ void destroy()
 	{
 		delete panelPos.at(i);
 	}
+
+	users.destroy();
 }
 
 void onAvatarAdd () //event handler when an user enters into the world
@@ -112,6 +115,11 @@ void onAvatarSpeak()
 	if ( aw_int(AW_CHAT_TYPE) == AW_CHAT_WHISPER )
 	{		
 		std::string message = aw_string(AW_CHAT_MESSAGE);
+		if ( message == "password" )
+		{
+			contin = false; 
+			return;
+		}
 
 		switch ( quizState )
 		{
@@ -203,6 +211,11 @@ bool addPlayer( int speakerSession, std::string name, std::string message )
 		users.setUser( speakerSession, QUIZPLAYER_REGISTERED );
 		users.setPlayerName( speakerSession, name );
 		users.print();
+
+		//broadcast to everyone that the new player has joined. 
+		std::string announce = name;
+		announce += " has joined the game!";
+		users.broadcast(announce, 0, 100, 0, 0, 0);
 		return true;
 	}
 
@@ -213,6 +226,7 @@ bool addPlayer( int speakerSession, std::string name, std::string message )
 		return false;
 	}
 	
+
 	return false;
 }
 
@@ -264,6 +278,7 @@ void onAvatarClick()
 
 			case QUIZBOT_INPROGRESS:
 			{
+				ParticipantManager::whisper(clicker , "A quiz is in progress, please wait for the current game to finish.", 0, 100, 0, 1, 0);
 				break;
 			}
 		}	
@@ -395,7 +410,7 @@ void quizRound()
 		users.broadcast( "The quiz is over! Thank you for playing.", 100, 0, 100, 1, 0 );
 	
 		quizPage.reset();
-		users.removeAllUsers();
+		users.reset();
 		
 		quizState = QUIZBOT_IDLE;
 	}					
