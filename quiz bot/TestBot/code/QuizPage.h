@@ -14,6 +14,7 @@ public:
 	~QuizPage(void);
 
 	void loadData( std::string filename );
+	void loadHTMLData( std::string filename ); 
 	QuizQuestion* getNextQuestion();
 	void reset(); 
 	

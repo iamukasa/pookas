@@ -50,6 +50,83 @@ void QuizPage::loadData( std::string filename )
 
 }
 
+void QuizPage::loadHTMLData( std::string filename )
+{
+	std::string line;
+	std::ifstream file (filename.c_str());
+	std::string c;
+	bool ignore = false;
+	std::vector <std::string> stringslist; 
+	if (file.is_open())
+	{
+		while (!file.eof() )
+		{
+			QuizQuestion q;
+
+			c = file.get();
+			if ( c == "<" )
+			{
+				ignore = true; 
+			}
+
+			else if ( c == ">" )
+			{
+				ignore = false;
+				stringslist.push_back(std::string(""));
+			}
+
+			else if (!ignore && c!= "\n") //not a < or > and not ignoring
+			{
+				stringslist.at(stringslist.size()-1).append(std::string(c));
+			}
+			
+		}
+
+		file.close();
+	}
+		
+	//remove all the ones which are spaces only 
+	for (unsigned int j = 0; j < stringslist.size(); j++ )
+	{	
+		
+		if ( stringslist.at(j).find('.') != std::string::npos ) //it's a question 
+		{
+			//std::cout << "Q" << stringslist.at(j) << "\n";
+			QuizQuestion q;			
+			q.setQuestion(stringslist.at(j)); 
+			questions.push_back(q);			
+		}
+
+		else if ( stringslist.at(j).find(':') != std::string::npos ) //an answer
+		{
+			//std::cout << "A" << stringslist.at(j) << "\n";			
+			int asterixIndex = stringslist.at(j).find('*');
+			if ( asterixIndex != std::string::npos ) //it's a correct answer
+			{
+				int lastAnswer = questions.at(questions.size()-1).getAnswers()->size();
+				questions.at(questions.size()-1).setCorrectAnswer(lastAnswer);
+				stringslist.at(j).erase(stringslist.at(j).begin()+asterixIndex);
+			}
+			
+			questions.at(questions.size()-1).addAnswer(stringslist.at(j));			
+		}
+
+	}	
+	
+	//print out stringslist
+	for (unsigned int i = 0; i < questions.size(); i++ )
+	{
+		std::cout << "Q:" << questions.at(i).getQuestion() << "\n";
+		std::cout << "Correct answer: " << questions.at(i).getCorrectAnswer() << "\n";
+		for ( unsigned int y = 0; y < questions.at(i).getAnswers()->size(); y++ )
+		{
+			std::cout << "A: " << questions.at(i).getAnswers()->at(y) << "\n";
+		}
+	}
+
+	
+}
+
 QuizQuestion* QuizPage::getNextQuestion()
 {
 	unsigned int index = counter;

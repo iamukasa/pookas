@@ -3,6 +3,7 @@
 
 #include <Vector>
 #include <iostream>
+#include <string>
 #include "QuizParticipant.h" 
 #include "aw.h" 
 
@@ -19,7 +20,7 @@ public:
 
 	void removeUser( int session ); 
 	void removeAllUsers(); 
-	void removeAllWithState( int state ); 
+	void removeAllWithState( PlayerState state ); 
 
 	int userExists( int session ); 
 	PlayerState getState( int session ); 
@@ -36,7 +37,8 @@ public:
 	static void whisper( int session, std::string message, int r, int g, int b, int bold, int italic );
 	void checkAnswers( Vect3D objPos, int radius );
 	void broadcastTopScores();
-
+	
+	void reset();
 private:
 	std::vector <QuizParticipant*> quizUsers;
 	int startingPlayerSID;
