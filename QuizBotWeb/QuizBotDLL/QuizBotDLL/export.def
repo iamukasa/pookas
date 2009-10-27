@@ -1,0 +1,3 @@
+LIBRARY	"QuizBotDLL"
+EXPORTS
+  botStart
