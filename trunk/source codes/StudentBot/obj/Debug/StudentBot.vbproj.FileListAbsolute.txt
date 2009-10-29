@@ -1,0 +1,15 @@
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\Interop.AWSDKLib42.dll
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\AxInterop.AWSDKLib42.dll
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\StudentBot.vbproj.ResolveComReference.cache
+C:\Users\garloo\Desktop\StudentBot\bin\Debug\StudentBot.exe
+C:\Users\garloo\Desktop\StudentBot\bin\Debug\StudentBot.pdb
+C:\Users\garloo\Desktop\StudentBot\bin\Debug\StudentBot.xml
+C:\Users\garloo\Desktop\StudentBot\bin\Debug\Interop.AWSDKLib42.dll
+C:\Users\garloo\Desktop\StudentBot\bin\Debug\AxInterop.AWSDKLib42.dll
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\StudentBot.StudentBot.resources
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\StudentBot.Resources.resources
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\StudentBot.vbproj.GenerateResource.Cache
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\StudentBot.exe
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\StudentBot.xml
+C:\Users\garloo\Desktop\StudentBot\obj\Debug\StudentBot.pdb
