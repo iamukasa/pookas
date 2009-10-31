@@ -1,3 +1,7 @@
+/** \class ParticipantManager
+Manages quiz players.
+*/
+
 #ifndef _PARTICIPANT_MANAGER_H_
 #define _PARTICIPANT_MANAGER_H_
 

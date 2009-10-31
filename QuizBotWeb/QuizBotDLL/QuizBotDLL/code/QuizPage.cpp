@@ -9,6 +9,11 @@ QuizPage::~QuizPage(void)
 {
 }
 
+/** 
+\fn void QuizPage::loadData( std::string filename )
+\brief Loads data from a text file and populates the questions vector with it
+\param filename File name of the file that contains HTML data
+*/
 void QuizPage::loadData( std::string filename )
 {
 	std::string line;
@@ -50,40 +55,39 @@ void QuizPage::loadData( std::string filename )
 
 }
 
-void QuizPage::loadHTMLData( std::string filename )
+/** 
+\fn void QuizPage::loadData( std::string data )
+\brief Reads HTML data from a string and populates the questions list with it
+\param data String containing HTML data for quiz
+*/
+void QuizPage::loadHTMLData( std::string data )
 {
-	std::string line;
-	std::ifstream file (filename.c_str());
 	std::string c;
 	bool ignore = false;
 	std::vector <std::string> stringslist; 
-	if (file.is_open())
+	
+	for ( unsigned int i = 0; i < data.length(); i++ )
 	{
-		while (!file.eof() )
+		QuizQuestion q;
+
+		c = data.at(i);
+		if ( c == "<" )
 		{
-			QuizQuestion q;
-
-			c = file.get();
-			if ( c == "<" )
-			{
-				ignore = true; 
-			}
-
-			else if ( c == ">" )
-			{
-				ignore = false;
-				stringslist.push_back(std::string(""));
-			}
-
-			else if (!ignore && c!= "\n") //not a < or > and not ignoring
-			{
-				stringslist.at(stringslist.size()-1).append(std::string(c));
-			}
-			
+			ignore = true; 
 		}
 
-		file.close();
+		else if ( c == ">" )
+		{
+			ignore = false;
+			stringslist.push_back(std::string(""));
+		}
+
+		else if (!ignore && c!= "\n") //not a < or > and not ignoring
+		{
+			stringslist.at(stringslist.size()-1).append(std::string(c));
+		}
 	}
+		
 		
 	//remove all the ones which are spaces only 
 	for (unsigned int j = 0; j < stringslist.size(); j++ )
@@ -127,6 +131,7 @@ void QuizPage::loadHTMLData( std::string filename )
 	
 }
 
+//gets the next question in the list
 QuizQuestion* QuizPage::getNextQuestion()
 {
 	unsigned int index = counter;
@@ -141,6 +146,7 @@ QuizQuestion* QuizPage::getNextQuestion()
 	}
 }
 
+//reset the index into the questions list
 void QuizPage::reset()
 {
 	counter = 0;

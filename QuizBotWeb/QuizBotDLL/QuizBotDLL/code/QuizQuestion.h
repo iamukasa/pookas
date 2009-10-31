@@ -1,3 +1,7 @@
+/** \class QuizQuestion
+Holds data for each quiz question
+*/
+
 #ifndef _QUIZQUESTION_H_
 #define _QUIZQUESTION_H_
 

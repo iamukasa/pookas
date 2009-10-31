@@ -1,3 +1,7 @@
+/** \file main.cpp
+Main file where the bot starts executing.
+*/
+
 #include "aw.h" //include Activeworld header file
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,29 +18,39 @@ void createBot( std::string botName, float x, float y, float z );
 void createHUD( int session ); 
 
 //event handlers
-void onAvatarAdd(); 
 void onAvatarSpeak();
-void onAvatarChange(); 
 void onAvatarClick(); 
-void onAvatarHUDClick(); 
-void onBump(); 
 
 bool addPlayer( int speakerSession, std::string name, std::string message );
 void quizRound();
 void destroy();
 
-enum BotState { QUIZBOT_IDLE, QUIZBOT_REGISTRATION, QUIZBOT_INPROGRESS };
+/**
+The QuizBot goes through these states throughout the whole lifetime of the program.
+*/
+enum BotState { QUIZBOT_IDLE, /**< Nobody has talked to the bot */
+QUIZBOT_REGISTRATION, /**< Someone decided to start a quiz, and other players can join */
+QUIZBOT_INPROGRESS /**< Quiz is in progress */
+}; 
 
 ParticipantManager users; 
 BotState quizState; 
 QuizPage quizPage; 
 std::vector <Vect3D*> panelPos;
 bool contin = true; 
+
+/** 
+\fn int botStart (char *htmldata)
+\brief Main bot function where execution starts and ends. 
+\param htmldata The string containing HTML format quiz data 
+
+Initialises and shuts down ActiveWorlds and the bot.
+Sets the position of the answer panels.
+Contains a main loop that triggers every second. 
+When the bot is IN_PROGRESS, this main loop calls quizRound().
+*/
 int botStart (char *htmldata)
 {
-	std::cout << "Quiz Bot" << std::endl;
-	std::cout << "HTML Data:\n" << htmldata << std::endl;
-
 	//initialize quiz questions
 	quizPage.loadHTMLData(htmldata);
 
@@ -74,6 +88,10 @@ int botStart (char *htmldata)
 	return 0;
 }
 
+/** 
+\fn void init()
+\brief Initialises activeworlds api, registers event handlers
+*/
 void init()
 {
 	int rc;
@@ -85,26 +103,32 @@ void init()
 	}
 
 	//register event handlers
-	aw_event_set(AW_EVENT_AVATAR_ADD, onAvatarAdd );
-	aw_event_set(AW_EVENT_CHAT, onAvatarSpeak );
-	aw_event_set(AW_EVENT_AVATAR_CHANGE, onAvatarChange); 
+	aw_event_set(AW_EVENT_CHAT, onAvatarSpeak );	
 	aw_event_set(AW_EVENT_AVATAR_CLICK, onAvatarClick); 
-	aw_event_set(AW_EVENT_HUD_CLICK, onAvatarHUDClick); 
-	aw_event_set(AW_EVENT_OBJECT_BUMP, onBump); 
 }
 
+/** 
+\fn void destroy()
+\brief Shutdown function called when execution ends. 
+*/
 void destroy()
 {
 	for ( unsigned int i = 0; i < panelPos.size(); i++ )
 	{
 		delete panelPos.at(i);
 	}
+
+	users.destroy();
 }
 
-void onAvatarAdd () //event handler when an user enters into the world
-{
-}
+/** 
+\fn void onAvatarSpeak()
+\brief Called when an avatar speaks to another. 
 
+Checks if the speaker is speaking to the bot. 
+IDLE - Add starting player, and move state to REGISTRATION.
+REGISTRATION - Add other players to the quiz.
+*/
 void onAvatarSpeak()
 {
 	int speakerSession = aw_int( AW_CHAT_SESSION ); 
@@ -112,7 +136,7 @@ void onAvatarSpeak()
 	if ( aw_int(AW_CHAT_TYPE) == AW_CHAT_WHISPER )
 	{		
 		std::string message = aw_string(AW_CHAT_MESSAGE);
-		if ( message == "password" )
+		if ( message == "password" ) //shut down the bot
 		{
 			contin = false; 
 			return;
@@ -120,23 +144,24 @@ void onAvatarSpeak()
 
 		switch ( quizState )
 		{
-			case QUIZBOT_IDLE:
+			case QUIZBOT_IDLE: //nobody decided to start a quiz game yet
 			{				
 				if ( addPlayer( speakerSession, aw_string(AW_AVATAR_NAME), message ) )
 				{
-					//delete everyone else in the list
+					//delete everyone else in the list in case multiple people clicked but didn't reply y/n
 					users.removeAllUsers();
 
 					users.setUser( speakerSession, QUIZPLAYER_REGISTERED ); 
-					users.setPlayerName( speakerSession, aw_string(AW_AVATAR_NAME) );
-
-					quizState = QUIZBOT_REGISTRATION;
+					users.setPlayerName( speakerSession, aw_string(AW_AVATAR_NAME) );					
 					users.setStartingPlayer( speakerSession );
 					ParticipantManager::whisper(speakerSession,	
 						"You are the starting player. Click on me when you would like to begin the quiz for everyone." ,
 						0, 100, 0, 0, 0);
 					
 					aw_say( "[Announcement] Join the quiz game starting now at Level 2!");
+
+					//advance the bot state to registration
+					quizState = QUIZBOT_REGISTRATION;
 				}			
 				
 				break;
@@ -186,6 +211,15 @@ void onAvatarSpeak()
 	}
 }
 
+/** 
+\fn bool addPlayer( int speakerSession, std::string name, std::string message )
+\brief Adds player to the quiz.
+\param speakerSession Session ID of the player who wants to join
+\param name Name of the player who wants to join
+\param message The player's whispered message to the bot.
+
+Checks if the speaker is whispering "y/n" to the bot and adds the player accordingly.
+*/
 bool addPlayer( int speakerSession, std::string name, std::string message )
 {
 	int userExists = users.userExists( speakerSession );
@@ -193,7 +227,6 @@ bool addPlayer( int speakerSession, std::string name, std::string message )
 	if ( userExists == -1 ) //if the user isn't on the list, he hasn't clicked the bot yet
 		return false;
 
-	std::cout << "AddPlayer: playerstate = " << users.getState( speakerSession ) << std::endl;
 	if ( users.getState( speakerSession ) != QUIZPLAYER_CLICKED ) //the player is already registered
 	{
 		ParticipantManager::whisper(speakerSession , "Please wait for the game to start.", 0, 100, 0, 0, 0);
@@ -226,6 +259,16 @@ bool addPlayer( int speakerSession, std::string name, std::string message )
 	return false;
 }
 
+
+/** 
+\fn void onAvatarClick()
+\brief Called when an avatar is clicked
+
+Checks if the player clicked on the bot.
+IDLE - Bot asks if the player wants to start a new quiz. 
+REGISTRATION - Bot asks if the player wants to join.
+IN_PROGRESS - Notifies clicker that a quiz is in progress. 
+*/
 void onAvatarClick()
 {
 	int clicker = aw_int( AW_AVATAR_SESSION ); 
@@ -281,43 +324,17 @@ void onAvatarClick()
 	}
 }
 
-void onAvatarChange()
-{	
-	
-}
+/** 
+\fn void createBot( std::string botName, float x, float y, float z )
+\brief Called to create a bot. 
 
-void onAvatarHUDClick()
-{
-	aw_hud_destroy(	aw_int(AW_HUD_ELEMENT_SESSION),	aw_int(AW_HUD_ELEMENT_ID)); 
-}
+\param botName Name of the bot
+\param x x-coordinate
+\param y y-coordinate
+\param z z-coordinate
 
-void createHUD( int session )
-{
-	int rc;
-	aw_int_set (AW_HUD_ELEMENT_TYPE, AW_HUD_TYPE_TEXT);
-	aw_string_set (AW_HUD_ELEMENT_TEXT, "This is a HUD element");
-	aw_int_set (AW_HUD_ELEMENT_ID, 1);
-	aw_int_set (AW_HUD_ELEMENT_SESSION, session);
-	aw_int_set (AW_HUD_ELEMENT_ORIGIN, AW_HUD_ORIGIN_CENTER);
-	aw_float_set (AW_HUD_ELEMENT_OPACITY, 1.0f);
-	aw_int_set (AW_HUD_ELEMENT_X, -100);
-	aw_int_set (AW_HUD_ELEMENT_Y, -100);
-	aw_int_set (AW_HUD_ELEMENT_Z, 1);
-	aw_int_set (AW_HUD_ELEMENT_FLAGS, AW_HUD_ELEMENT_FLAG_CLICKS);
-	aw_int_set (AW_HUD_ELEMENT_COLOR, 0xff0000); /* RGB (255, 255,0) */
-	aw_int_set (AW_HUD_ELEMENT_SIZE_X, 200);
-	aw_int_set (AW_HUD_ELEMENT_SIZE_Y, 200);
-	
-	if (rc = aw_hud_create ())
-		printf ("Unable to create HUD element (reason %d)\n", rc);	
-
-}
-
-void onBump()
-{
-	std::cout << "Someone bumped into: " << aw_string(AW_OBJECT_MODEL) << std::endl;
-}
-
+Creates a bot and connects to ActiveWorlds. Does not support multiple instances currently.
+*/
 void createBot( std::string botName, float x, float y, float z )
 {
 	int rc; 
@@ -362,6 +379,14 @@ void createBot( std::string botName, float x, float y, float z )
 	}
 }
 
+/** 
+\fn void createBot( std::string botName, float x, float y, float z )
+\brief Defines each round of the quiz when the bot is IN_PROGRESS.
+
+Called every tick when the bot is IN_PROGRESS.
+Gets questions and answers each round, checks the answers when time is up, and increments player score accordingly.
+Resets the quiz when all the questions are used. 
+*/
 void quizRound()
 {
 	//retrieve a question 
@@ -373,15 +398,8 @@ void quizRound()
 		//get the answers for the question
 		std::vector <std::string>* a = q->getAnswers();
 		for ( unsigned int i = 0; i < a->size(); i++ )
-		{
-			std::string msg;
-			char optionNum [2]; // assume the number of questions will never be 3 digits
-			_itoa_s(i+1, optionNum,10);
-			msg += optionNum;
-			msg += " ";
-			msg += a->at(i);
-	
-			users.broadcast( msg, 0, 0, 0, 1, 0 );
+		{	
+			users.broadcast( a->at(i), 0, 0, 0, 1, 0 );
 		}
 
 		//wait for 10 seconds for the players to answer
@@ -404,7 +422,8 @@ void quizRound()
 		//broadcast the top scores
 		users.broadcastTopScores();
 		users.broadcast( "The quiz is over! Thank you for playing.", 100, 0, 100, 1, 0 );
-	
+		
+		//reset everything
 		quizPage.reset();
 		users.reset();
 		quizState = QUIZBOT_IDLE;
