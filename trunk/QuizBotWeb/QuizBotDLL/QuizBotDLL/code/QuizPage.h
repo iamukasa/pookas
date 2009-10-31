@@ -1,3 +1,7 @@
+/** \class QuizPage
+Manages quiz questions
+*/
+
 #ifndef _QUIZPAGE_H_
 #define _QUIZPAGE_H_
 
@@ -14,7 +18,7 @@ public:
 	~QuizPage(void);
 
 	void loadData( std::string filename );
-	void loadHTMLData( std::string filename ); 
+	void loadHTMLData( std::string data ); 
 	QuizQuestion* getNextQuestion();
 	void reset(); 
 	

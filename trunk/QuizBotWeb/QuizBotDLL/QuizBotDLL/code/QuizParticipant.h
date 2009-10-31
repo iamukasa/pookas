@@ -1,3 +1,7 @@
+/** \class QuizParticipant
+Holds data for each quiz player
+*/
+
 #ifndef _QUIZ_PARTICIPANT_
 #define _QUIZ_PARTICIPANT_
 

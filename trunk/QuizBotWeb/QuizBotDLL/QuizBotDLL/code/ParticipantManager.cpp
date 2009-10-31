@@ -10,6 +10,10 @@ ParticipantManager::~ParticipantManager(void)
 {
 }
 
+/** 
+\fn void ParticipantManager::destroy()
+\brief Called when program shutdown
+*/
 void ParticipantManager::destroy()
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
@@ -21,6 +25,12 @@ void ParticipantManager::destroy()
 	quizUsers.clear();
 }
 
+/** 
+\fn void ParticipantManager::setUser( int session, PlayerState state )
+\brief Adds a user to the quiz. 
+\param session Session ID of the player to be added
+\param state State to set the player to
+*/
 void ParticipantManager::setUser( int session, PlayerState state )
 {
 	int userIndex = userExists(session);
@@ -41,6 +51,11 @@ void ParticipantManager::setUser( int session, PlayerState state )
 	}
 }
 
+/** 
+\fn void ParticipantManager::setAllUsers ( PlayerState state )
+\brief Sets a state for all users.
+\param state State to set the players to
+*/
 void ParticipantManager::setAllUsers ( PlayerState state )
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
@@ -51,6 +66,11 @@ void ParticipantManager::setAllUsers ( PlayerState state )
 
 }
 
+/** 
+\fn void ParticipantManager::removeUser( int session )
+\brief Removes a user of a particular session ID.
+\param session Session ID of the player
+*/
 void ParticipantManager::removeUser( int session )
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
@@ -63,12 +83,21 @@ void ParticipantManager::removeUser( int session )
 	std::cout << "Removing \n"; 
 }
 
+/** 
+\fn void ParticipantManager::removeAllUsers()
+\brief Clears the user list
+*/
 void ParticipantManager::removeAllUsers()
 {
 	quizUsers.clear();
 	std::cout << "After clear\n";
 }
 
+/** 
+\fn void ParticipantManager::removeAllWithState( PlayerState state )
+\brief Removes all users with a particular state
+\param state The state of the players to remove
+*/
 void ParticipantManager::removeAllWithState( PlayerState state )
 {
 	std::vector <int> toRemove;
@@ -89,7 +118,12 @@ void ParticipantManager::removeAllWithState( PlayerState state )
 	}
 }
 
-//returns the index into the participants vector if exists, -1 otherwise
+/** 
+\fn int ParticipantManager::userExists( int session )
+\brief Check if a player is in the user list
+\param session Session ID of the player.
+\return The index of the player in the user list. If the player is not in the list, returns -1. 
+*/
 int ParticipantManager::userExists( int session )
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
@@ -102,6 +136,12 @@ int ParticipantManager::userExists( int session )
 	return -1;
 }
 
+/** 
+\fn PlayerState ParticipantManager::getState( int session )
+\brief Gets the state of a player
+\param session Session ID of the player
+\return The state of the player
+*/
 PlayerState ParticipantManager::getState( int session )
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
@@ -113,6 +153,12 @@ PlayerState ParticipantManager::getState( int session )
 	return QUIZPLAYER_INVALID;
 }
 
+/** 
+\fn void ParticipantManager::setState( int session, PlayerState state )
+\brief Sets the state of a player
+\param session Session ID of the player
+\param state The state to set the player to
+*/
 void ParticipantManager::setState( int session, PlayerState state )
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
@@ -122,6 +168,12 @@ void ParticipantManager::setState( int session, PlayerState state )
 	}
 }
 
+/** 
+\fn void ParticipantManager::print()
+\brief Prints out the players in the user list. 
+
+Debugging purposes.
+*/
 void ParticipantManager::print()
 {
 	std::cout << "=======================" << std::endl;
@@ -133,17 +185,36 @@ void ParticipantManager::print()
 
 }
 
+/** 
+\fn void ParticipantManager::setStartingPlayer( int session )
+\brief Sets the first player who started the quiz. 
+\param session Session ID of the player
+*/
 void ParticipantManager::setStartingPlayer( int session )
 {
 	startingPlayerSID = session; 
 }
 
+/** 
+\fn int ParticipantManager::getStartingPlayer()
+\brief Gets the first player who started the quiz. 
+\return Session ID of the player
+*/
 int ParticipantManager::getStartingPlayer()
 {
 	return startingPlayerSID;
 }
 
-
+/** 
+\fn void ParticipantManager::broadcast( std::string message, int r, int g, int b, int bold, int italic )
+\brief Broadcasts an ActiveWorlds console message to all players in the user list
+\param message Message to broadcast
+\param r Defines colour of the message
+\param g Defines colour of the message
+\param b Defines colour of the message
+\param bold Makes the font bold
+\param italic Makes the font italic
+*/
 void ParticipantManager::broadcast( std::string message, int r, int g, int b, int bold, int italic )
 {
 	int rc;
@@ -168,6 +239,17 @@ void ParticipantManager::broadcast( std::string message, int r, int g, int b, in
 	}
 }
 
+/** 
+\fn void ParticipantManager::whisper( int session, std::string message, int r, int g, int b, int bold, int italic )
+\brief Whispers a message to a player
+\param session Session ID of the player to whisper to
+\param message Message to broadcast
+\param r Defines colour of the message
+\param g Defines colour of the message
+\param b Defines colour of the message
+\param bold Makes the font bold
+\param italic Makes the font italic
+*/
 void ParticipantManager::whisper( int session, std::string message, int r, int g, int b, int bold, int italic )
 {
 	int rc;
@@ -190,6 +272,15 @@ void ParticipantManager::whisper( int session, std::string message, int r, int g
 	}
 }
 
+/** 
+\fn void ParticipantManager::checkAnswers( Vect3D objPos, int radius )
+\brief Checks which players answered correctly
+\param objPos Position of the tile with the correct answer
+\param radius Sphere collision boundary. If the player is within this radius of the tile position, detect as correct.
+
+Checks which players answered correctly and tells the player whether they are right or wrong. 
+Increments their score accordingly.
+*/
 void ParticipantManager::checkAnswers( Vect3D objPos, int radius )
 {
 	std::string scoremsg;
@@ -221,6 +312,10 @@ void ParticipantManager::checkAnswers( Vect3D objPos, int radius )
 	}
 }
 
+/** 
+\fn void ParticipantManager::broadcastTopScores()
+\brief Broadcasts the top scores and players who achieved it
+*/
 void ParticipantManager::broadcastTopScores()
 {
 	std::string top = "The top score is ";
@@ -245,6 +340,12 @@ void ParticipantManager::broadcastTopScores()
 	std::cout << top << std::endl;
 }
 
+/** 
+\fn void ParticipantManager::setPlayerName( int session, std::string name )
+\brief Sets the player name
+\param session Session ID of the player
+\param name Name of the player
+*/
 void ParticipantManager::setPlayerName( int session, std::string name )
 {
 	std::cout << "setting player name: " << name << " for session " << session << std::endl;
@@ -258,6 +359,13 @@ void ParticipantManager::setPlayerName( int session, std::string name )
 	}
 }
 
+
+/** 
+\fn std::string ParticipantManager::getPlayerName( int session )
+\brief Gets the name of the player
+\param session Session ID of the player
+\return Name of the player
+*/
 std::string ParticipantManager::getPlayerName( int session )
 {
 	for ( unsigned int i = 0; i < quizUsers.size(); i++ )
@@ -269,6 +377,10 @@ std::string ParticipantManager::getPlayerName( int session )
 	return NULL;
 }
 
+/** 
+\fn void ParticipantManager::reset()
+\brief Resets all variables for the next quiz game. 
+*/
 void ParticipantManager::reset()
 {
 	removeAllUsers();

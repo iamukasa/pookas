@@ -1,3 +1,7 @@
+/** \class Vect3D
+Simple 3D vector.
+*/
+
 #ifndef _VECT3D_H_
 #define _VECT3D_H_
 
