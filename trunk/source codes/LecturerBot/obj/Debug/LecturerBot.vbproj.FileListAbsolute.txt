@@ -16,3 +16,18 @@ C:\Users\garloo\Desktop\LecturerBot\obj\Debug\LecturerBot.vbproj.GenerateResourc
 C:\Users\garloo\Desktop\LecturerBot\obj\Debug\LecturerBot.exe
 C:\Users\garloo\Desktop\LecturerBot\obj\Debug\LecturerBot.xml
 C:\Users\garloo\Desktop\LecturerBot\obj\Debug\LecturerBot.pdb
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\Interop.AWSDKLib42.dll
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\AxInterop.AWSDKLib42.dll
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\LecturerBot.vbproj.ResolveComReference.cache
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\LecturerBot.exe
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\LecturerBot.xml
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\LecturerBot.pdb
+C:\Garloo\pookas\source codes\LecturerBot\bin\Debug\LecturerBot.exe
+C:\Garloo\pookas\source codes\LecturerBot\bin\Debug\LecturerBot.pdb
+C:\Garloo\pookas\source codes\LecturerBot\bin\Debug\LecturerBot.xml
+C:\Garloo\pookas\source codes\LecturerBot\bin\Debug\Interop.AWSDKLib42.dll
+C:\Garloo\pookas\source codes\LecturerBot\bin\Debug\AxInterop.AWSDKLib42.dll
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\ResolveAssemblyReference.cache
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\LecturerBot.LecturerBot.resources
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\LecturerBot.Resources.resources
+C:\Garloo\pookas\source codes\LecturerBot\obj\Debug\LecturerBot.vbproj.GenerateResource.Cache
