@@ -180,11 +180,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\QuizBotUnitTest.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\QuizPage.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\QuizParticipant.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Vect2D.cpp"
+				RelativePath=".\QuizQuestion.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Vect3D.cpp"
 				>
 			</File>
 		</Filter>
@@ -198,11 +210,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\QuizBotUnitTest.h"
+				>
+			</File>
+			<File
+				RelativePath=".\QuizPage.h"
+				>
+			</File>
+			<File
 				RelativePath=".\QuizParticipant.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Vect2D.h"
+				RelativePath=".\QuizQuestion.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Vect3D.h"
 				>
 			</File>
 		</Filter>
