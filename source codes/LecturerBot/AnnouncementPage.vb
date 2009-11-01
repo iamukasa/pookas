@@ -13,16 +13,18 @@
         Dim News As New Announcement
         Dim EMPos1 As Integer
         Dim EMPos2 As Integer
-        Dim SizePos As Integer
+        'Dim SizePos As Integer
         Dim FontPos As Integer
         IconPos = SourceCode.IndexOf("/images/ci/icons/announcement_ia.gif", IconPos + 1)
         EMPos1 = SourceCode.IndexOf("<EM>", IconPos)
         EMPos2 = SourceCode.IndexOf("</EM>", EMPos1)
         Temp = SourceCode.Substring(EMPos1 + Len("<EM>"), EMPos2 - EMPos1 - Len("<EM>"))
         News.SetHeading(ParseData(Temp))
-        SizePos = SourceCode.IndexOf(" size=2>", EMPos2)
-        FontPos = SourceCode.IndexOf("</FONT></TD>", SizePos)
-        Temp = SourceCode.Substring(SizePos + Len(" size=2>"), FontPos - SizePos - Len(" size=2>"))
+        'SizePos = SourceCode.IndexOf(" size=2>", EMPos2)
+        'FontPos = SourceCode.IndexOf("</FONT></TD>", SizePos)
+        'Temp = SourceCode.Substring(SizePos + Len(" size=2>"), FontPos - SizePos - Len(" size=2>"))
+        FontPos = SourceCode.IndexOf("</FONT></TD>", EMPos2)
+        Temp = SourceCode.Substring(EMPos2, FontPos - EMPos2)
         News.SetDetail(ParseData(Temp))
         Return News
     End Function
@@ -34,7 +36,9 @@
         InputText = Replace(InputText, "&nbsp;", " ")
         InputText = Replace(InputText, "<br />", " ")
         InputText = Replace(InputText, "<br>", " ")
-        InputText = Replace(InputText, "<p>", " ")
+        InputText = Replace(InputText, "</p>", ", ")
+        InputText = Replace(InputText, "&lt;", "<")
+        InputText = Replace(InputText, "&gt;", ">")
         InputText = Replace(InputText, vbNewLine, " ")
         While InStr(InputText, "<") <> 0
             StartPos = InStr(InputText, "<")
@@ -46,6 +50,11 @@
             End If
             InputText = ExtractText
         End While
+
+        While InStr(InputText, "  ") <> 0
+            InputText = Replace(InputText, "  ", " ")
+        End While
+
         Return InputText
     End Function
 End Class

@@ -77,10 +77,13 @@ Public Class LecturerBot
         ChatResponse = ""
         If InStr(ChatMessage, "announcement") <> 0 Or InStr(ChatMessage, "news") <> 0 Then
             If InStr(ChatMessage, "2nd") <> 0 Or InStr(ChatMessage, "second") <> 0 Then
+                TextBox1.Text = News(1).GetAnnouncement
                 ChatResponse = "Hey " & AvatarName & ", " & News(1).GetAnnouncement
             ElseIf InStr(ChatMessage, "3rd") <> 0 Or InStr(ChatMessage, "third") <> 0 Then
+                TextBox1.Text = News(2).GetAnnouncement
                 ChatResponse = "Hey " & AvatarName & ", " & News(2).GetAnnouncement
             Else
+                TextBox1.Text = News(0).GetAnnouncement
                 ChatResponse = "Hey " & AvatarName & ", " & News(0).GetAnnouncement
             End If
         ElseIf InStr(ChatMessage, "start") <> 0 And InStr(ChatMessage, "lecture") <> 0 And Lecture = 0 Then
